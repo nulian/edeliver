@@ -687,23 +687,23 @@ upload_release_archive() {
     __remote "
       [ -f ~/.profile ] && source ~/.profile
       set -e
-      mkdir -p \"${_destination_directory}\" $SILENCE
-      cd \"${_destination_directory}\" $SILENCE
+      mkdir -p ${_destination_directory} $SILENCE
+      cd ${_destination_directory} $SILENCE
       AWS_ARGUMENTS=\"get ${AWS_BUCKET_NAME}/${_release_file} \" AWS_ACCESS_KEY_ID=\"$AWS_ACCESS_KEY_ID\" AWS_SECRET_ACCESS_KEY=\"$AWS_SECRET_ACCESS_KEY\" perl > ${APP}_${_release_version}.tar.gz 2>/dev/null <<'EOF'${_aws_script_content}EOF ;" "$HOSTS_APP_USER" "
 
       [ -f ~/.profile ] && source ~/.profile
       set -e
-      mkdir -p \"${_destination_directory}\" $SILENCE
-      cd \"${_destination_directory}\" $SILENCE
+      mkdir -p ${_destination_directory} $SILENCE
+      cd ${_destination_directory} $SILENCE
       AWS_ARGUMENTS=\"get ${AWS_BUCKET_NAME}/${_release_file} \" AWS_ACCESS_KEY_ID=\"$AWS_ACCESS_KEY_ID\" \\
       AWS_SECRET_ACCESS_KEY=\"$AWS_SECRET_ACCESS_KEY\" perl > ${APP}_${_release_version}.tar.gz 2>/dev/null <<'EOF'
         content from libexec/aws file
       EOF ;"
   elif [ "$RELEASE_STORE_TYPE" = "local" ]; then
     __remote "
-      [ -f \"\$HOME/.profile\" ] && . \"\$HOME/.profile\"
+      [ -f ~/.profile ] && source ~/.profile
       set -e
-      mkdir -p \"${_destination_directory}\" "
+      mkdir -p ${_destination_directory} "
     __parallel_scp "${RELEASE_STORE}/releases/${_release_file}" "${_destination_directory}/${APP}_${_release_version}.tar.gz"
   elif [ "$RELEASE_STORE_TYPE" = "remote" ]; then
     local _release_store_path=${RELEASE_STORE#*:}
@@ -714,8 +714,8 @@ upload_release_archive() {
     local _remote_job="
       [ -f ~/.profile ] && source ~/.profile
       set -e
-      cd \"$_release_store_path\"
-      [ -f \"$_release_file\" ] || exit 1
+      cd $_release_store_path
+      [ -f \"$_release_file\" ]
       background_jobs_pids=()
       background_jobs=()
     "
