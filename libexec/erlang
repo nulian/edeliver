@@ -714,7 +714,7 @@ upload_release_archive() {
     local _remote_job="
       [ -f \"\$HOME/.profile\" ] && . \"\$HOME/.profile\"
       set -e
-      cd "$_release_store_path"
+      cd \"$_release_store_path\"
       [ -f \"$_release_file\" ]
       background_jobs_pids=()
       background_jobs=()
