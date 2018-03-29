@@ -685,25 +685,25 @@ upload_release_archive() {
   if [ "$RELEASE_STORE_TYPE" = "s3" ]; then
     local _aws_script_content=$(cat $BASE_PATH/libexec/aws)
     __remote "
-      [ -f ~/.profile ] && source ~/.profile
+      [ -f \"\$HOME/.profile\" ] && . \"\$HOME/.profile\"
       set -e
-      mkdir -p ${_destination_directory} $SILENCE
-      cd ${_destination_directory} $SILENCE
+      mkdir -p \"${_destination_directory}\" $SILENCE
+      cd \"${_destination_directory}\" $SILENCE
       AWS_ARGUMENTS=\"get ${AWS_BUCKET_NAME}/${_release_file} \" AWS_ACCESS_KEY_ID=\"$AWS_ACCESS_KEY_ID\" AWS_SECRET_ACCESS_KEY=\"$AWS_SECRET_ACCESS_KEY\" perl > ${APP}_${_release_version}.tar.gz 2>/dev/null <<'EOF'${_aws_script_content}EOF ;" "$HOSTS_APP_USER" "
 
-      [ -f ~/.profile ] && source ~/.profile
+      [ -f \"\$HOME/.profile\" ] && . \"\$HOME/.profile\"
       set -e
-      mkdir -p ${_destination_directory} $SILENCE
-      cd ${_destination_directory} $SILENCE
+      mkdir -p \"${_destination_directory}\" $SILENCE
+      cd \"${_destination_directory}\" $SILENCE
       AWS_ARGUMENTS=\"get ${AWS_BUCKET_NAME}/${_release_file} \" AWS_ACCESS_KEY_ID=\"$AWS_ACCESS_KEY_ID\" \\
       AWS_SECRET_ACCESS_KEY=\"$AWS_SECRET_ACCESS_KEY\" perl > ${APP}_${_release_version}.tar.gz 2>/dev/null <<'EOF'
         content from libexec/aws file
       EOF ;"
   elif [ "$RELEASE_STORE_TYPE" = "local" ]; then
     __remote "
-      [ -f ~/.profile ] && source ~/.profile
+      [ -f \"\$HOME/.profile\" ] && . \"\$HOME/.profile\"
       set -e
-      mkdir -p ${_destination_directory} "
+      mkdir -p \"${_destination_directory}\" "
     __parallel_scp "${RELEASE_STORE}/releases/${_release_file}" "${_destination_directory}/${APP}_${_release_version}.tar.gz"
   elif [ "$RELEASE_STORE_TYPE" = "remote" ]; then
     local _release_store_path=${RELEASE_STORE#*:}
@@ -712,7 +712,7 @@ upload_release_archive() {
     local _dest_file_name="${_destination_directory}/${APP}_${_release_version}.tar.gz"
 
     local _remote_job="
-      [ -f ~/.profile ] && source ~/.profile
+      [ -f \"\$HOME/.profile\" ] && . \"\$HOME/.profile\"
       set -e
       cd $_release_store_path
       [ -f \"$_release_file\" ]
@@ -721,7 +721,7 @@ upload_release_archive() {
     "
     for _host in $_deploy_hosts; do
       _remote_job="$_remote_job
-        if [[ \"$_host\" = \"$_release_store_host\" ]]; then
+        if [ \"$_host\" = \"$_release_store_host\" ]; then
           mkdir -p \"${_destination_directory}\"
           cp $_release_file $_dest_file_name &
         else
@@ -754,7 +754,7 @@ upgrade_release() {
   [[ "$RELEASE_CMD" = "mix" ]] && local _upgrade_command="bin/${APP} upgrade ${VERSION} $SILENCE" \
                                || local _upgrade_command="bin/${APP} upgrade ${APP}_${VERSION} $SILENCE"
   __remote "
-    [ -f ~/.profile ] && source ~/.profile
+    [ -f \"\$HOME/.profile\" ] && . \"\$HOME/.profile\"
     set -e
     cd \"${DELIVER_TO}/${APP}\" $SILENCE
     $_upgrade_command
@@ -770,7 +770,7 @@ remote_clean_release_dir() {
   local _archive="${APP}_${_release_version}.tar.gz"
   status "Cleaning release directory"
   __remote "
-    [ -f ~/.profile ] && source ~/.profile
+    [ -f \"\$HOME/.profile\" ] && . \"\$HOME/.profile\"
     set -e
     cd \"${_archive_dir}\" $SILENCE
     [ \"$RELEASE_CMD\" = \"mix\" ] && _app_folder=\"${APP}\" || _app_folder=\$(dirname \$(dirname \$(tar -tzf ${_archive} | grep releases/RELEASES)))
@@ -895,7 +895,7 @@ remote_extract_release_archive() {
   # when building releses with mix, the tar does not contain the app name as subdirectory
   [[ "$RELEASE_CMD" = "mix" ]] && _archive_dir="${_archive_dir%%/}/${APP}"
   __remote "
-    [ -f ~/.profile ] && source ~/.profile
+    [ -f \"\$HOME/.profile\" ] && . \"\$HOME/.profile\"
     set -e
     cd \"${_archive_dir}\" $SILENCE
     tar -xzvf \"${_archive}\" $SILENCE && rm \"${_archive}\" $SILENCE"
